@@ -1,0 +1,107 @@
+.pdf-avoid-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.pdf-avoid-break-before {
+  break-before: avoid;
+  page-break-before: avoid;
+}
+
+.pdf-section-break {
+  break-before: auto;
+  page-break-before: auto;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .app-header,
+  .panel-editor,
+  .panel-divider,
+  .panel-preview .panel-header {
+    display: none !important;
+  }
+
+  .app-main {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .panel-preview {
+    display: block !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  .preview-wrapper {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .markdown-body {
+    max-width: none !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+    color: #000 !important;
+  }
+
+  .markdown-body h1 {
+    font-size: 20pt !important;
+  }
+
+  .markdown-body h2 {
+    font-size: 16pt !important;
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  .markdown-body h3 {
+    font-size: 13pt !important;
+  }
+
+  .pdf-avoid-break,
+  .mermaid-container,
+  .code-block,
+  .table-wrapper,
+  pre,
+  blockquote,
+  table,
+  tr,
+  img,
+  .katex-display {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .pdf-avoid-break-before,
+  .markdown-body h2,
+  .markdown-body h3 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .markdown-body a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  .markdown-body a[href^="http"]:not(:has(img))::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  .mermaid-container {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 15mm 12mm;
+  }
+}
