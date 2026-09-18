@@ -2,6 +2,7 @@ import { RefObject } from "react";
 
 interface ToolbarProps {
   fileInputRef: RefObject<HTMLInputElement | null>;
+  hasPdfServer: boolean;
   isExporting: boolean;
   onOpenFile: () => void;
   onFileLoad: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -11,6 +12,7 @@ interface ToolbarProps {
 
 export function Toolbar({
   fileInputRef,
+  hasPdfServer,
   isExporting,
   onOpenFile,
   onFileLoad,
@@ -45,7 +47,11 @@ export function Toolbar({
         className="btn btn-primary"
         onClick={onExportPdf}
         disabled={isExporting}
-        title="Baixa markdownvizualizer.pdf diretamente"
+        title={
+          hasPdfServer
+            ? "Baixa markdownvizualizer.pdf diretamente"
+            : "Sem o servidor local, abre a impressão do navegador — use “Salvar como PDF”"
+        }
       >
         {isExporting ? "Gerando PDF…" : "Exportar PDF"}
       </button>

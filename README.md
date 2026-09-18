@@ -97,6 +97,7 @@ So the actual product decision here wasn't "build a PDF exporter." It was: **the
 - **Imprimir**: native browser print — the highest-fidelity path there is, because it *is* the browser's own renderer.
 - **Exportar PDF**: one click, direct file download, no print dialog — produced by a real headless Chromium instance so the output is vector text, not a raster image.
 - Both paths render from the exact same two CSS files, so there is no separate "PDF theme" that can visually drift from what Print produces.
+- On a **static deployment** there is no Node server, so the export endpoint doesn't exist. The app detects that on load and falls back to the native print dialog — with the reason stated up front, rather than failing at the click.
 
 ---
 
@@ -202,6 +203,8 @@ Open the printed local URL. **Imprimir** works with nothing else installed; **Ex
 npm run build     # tsc -b && vite build
 npm run preview   # serves the production build; /api/export-pdf still works here too
 ```
+
+> **Deploying it?** The PDF endpoint lives in a Vite plugin, so it only exists where a Node server runs (`dev` and `preview`). Published to a static host, the app detects the missing endpoint and routes **Exportar PDF** to the browser's print dialog instead. Running it behind a real Node process — a container running `npm run preview`, for instance — keeps the one-click download working.
 
 ---
 

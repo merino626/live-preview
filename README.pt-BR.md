@@ -97,6 +97,7 @@ Então a decisão de produto aqui não foi "construir um exportador de PDF". Foi
 - **Imprimir**: impressão nativa do navegador — o caminho de maior fidelidade que existe, porque *é* o próprio motor de renderização do navegador.
 - **Exportar PDF**: um clique, download direto, sem diálogo de impressão — gerado por uma instância real de Chromium headless, então a saída é texto vetorial, não uma imagem rasterizada.
 - Os dois caminhos renderizam a partir exatamente dos mesmos dois arquivos CSS, então não existe um "tema de PDF" separado que possa divergir visualmente do que o Imprimir gera.
+- Em um **deploy estático** não há servidor Node, então o endpoint de exportação não existe. O app detecta isso ao carregar e cai para o diálogo nativo de impressão — dizendo o motivo antes, em vez de falhar no clique.
 
 ---
 
@@ -202,6 +203,8 @@ Abra a URL local exibida no terminal. O **Imprimir** funciona sem mais nada inst
 npm run build     # tsc -b && vite build
 npm run preview   # serve o build de produção; /api/export-pdf continua funcionando aqui também
 ```
+
+> **Vai publicar?** O endpoint de PDF vive dentro de um plugin do Vite, então ele só existe onde há um servidor Node (`dev` e `preview`). Publicado em um host estático, o app detecta a ausência do endpoint e direciona o **Exportar PDF** para o diálogo de impressão do navegador. Rodando atrás de um processo Node de verdade — um container executando `npm run preview`, por exemplo — o download de um clique continua funcionando.
 
 ---
 

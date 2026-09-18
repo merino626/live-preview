@@ -1,16 +1,29 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MarkdownEditor } from "./components/MarkdownEditor";
 import { MarkdownPreview } from "./components/MarkdownPreview";
 import { Toolbar } from "./components/Toolbar";
 import { DEFAULT_MARKDOWN } from "./constants/defaultMarkdown";
-import { exportToPdf } from "./utils/pdfExport";
+import {
+  exportToPdf,
+  isPdfServerAvailable,
+  PdfServerUnavailableError,
+} from "./utils/pdfExport";
+
+const PRINT_FALLBACK_MESSAGE =
+  "Nesta versão publicada o download direto não está disponível — ele depende de um Chromium rodando no servidor local.\n\n" +
+  'Abrir a impressão do navegador? Escolha "Salvar como PDF" para obter exatamente o mesmo resultado.';
 
 export function App() {
   const [markdown, setMarkdown] = useState<string>(DEFAULT_MARKDOWN);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [hasPdfServer, setHasPdfServer] = useState<boolean>(true);
   const previewRef = useRef<HTMLElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    void isPdfServerAvailable().then(setHasPdfServer);
+  }, []);
 
   const handleFileLoad = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,8 +45,20 @@ export function App() {
     [],
   );
 
+  const printFallback = useCallback(() => {
+    setHasPdfServer(false);
+    if (window.confirm(PRINT_FALLBACK_MESSAGE)) {
+      window.print();
+    }
+  }, []);
+
   const handleExportPdf = useCallback(async () => {
     if (!previewRef.current || isExporting) {
+      return;
+    }
+
+    if (!hasPdfServer) {
+      printFallback();
       return;
     }
 
@@ -41,6 +66,11 @@ export function App() {
     try {
       await exportToPdf(previewRef.current);
     } catch (error) {
+      if (error instanceof PdfServerUnavailableError) {
+        printFallback();
+        return;
+      }
+
       const message =
         error instanceof Error
           ? error.message
@@ -49,7 +79,7 @@ export function App() {
     } finally {
       setIsExporting(false);
     }
-  }, [isExporting]);
+  }, [hasPdfServer, isExporting, printFallback]);
 
   const handlePrint = useCallback(() => {
     window.print();
@@ -71,6 +101,7 @@ export function App() {
         </div>
         <Toolbar
           fileInputRef={fileInputRef}
+          hasPdfServer={hasPdfServer}
           isExporting={isExporting}
           onExportPdf={handleExportPdf}
           onFileLoad={handleFileLoad}
